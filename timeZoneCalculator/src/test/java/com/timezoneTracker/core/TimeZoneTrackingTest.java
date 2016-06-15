@@ -1,83 +1,101 @@
-/**
- * 
- */
 package com.timezoneTracker.core;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.TimeZone;
 
-import com.assignment.IllegalTimeZoneException;
-import com.timezoneTracker.core.TimeZoneTracking;
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import com.timezoneTracker.exceptions.IllegalTimeZoneEntryException;
 
 /**
  * @author SDUDHI
- *
+ * 
  */
-public class TimeZoneTrackingTest extends TestCase {
+public class TimeZoneTrackingTest {
 
-	TimeZoneTracking timeZoneTracking;
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
+	private TimeZoneTracking timeZoneTracking;
+	private final Logger logger = Logger.getLogger(TimeZoneTrackingTest.class);
+
+	@Before
+	public void setUp() throws Exception {
 		timeZoneTracking = new TimeZoneTracking();
 	}
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		timeZoneTracking= null;
+	@After
+	public void tearDown() throws Exception {
+		timeZoneTracking = null;
 	}
 
 	/**
-	 * @throws IllegalTimeZoneException 
+	 * Test case to get the time zones in between two time zones
 	 * 
 	 */
-	public void testGetTimeZonesInBetween() throws IllegalTimeZoneException {
-		String startTimeZone ="PST";
+	@Test
+	public void getTimeZonesInBetween() throws IllegalTimeZoneEntryException {
+		logger.info("TimeZoneTrackingTest::getTimeZonesInBetween()::Start");
+		String startTimeZone = "PST";
 		String endTimeZone = "EST";
-		assertNotNull(timeZoneTracking);
-		Set<String> inBetweenTimeZones = timeZoneTracking.getTimeZonesInBetween(startTimeZone, endTimeZone);
-		Assert.assertEquals(2, inBetweenTimeZones.size());
+		Assert.assertNotNull(timeZoneTracking);
+		LinkedHashMap<String, ArrayList<TimeZone>> inBetweenTimeZones = timeZoneTracking
+				.getTimeZonesInBetween(startTimeZone, endTimeZone);
+		// LinkedHashMap<String, ArrayList<TimeZone>> inBetweenTimeZones =
+		// timeZoneTracking.getTimeZonesInBetween(startTimeZone, endTimeZone);
+		int count = inBetweenTimeZones.size();
+		Assert.assertEquals(2, count);
+		logger.info("Total TimeZones Between " + startTimeZone + " and "
+				+ endTimeZone + ": " + count);
+		logger.info("TimeZones Between " + startTimeZone + " and "
+				+ endTimeZone );
 		timeZoneTracking.displayTimeZones(inBetweenTimeZones);
+		logger.info("TimeZoneTrackingTest::getTimeZonesInBetween()::End");
 	}
-	
+
 	/**
-	 * @throws IllegalTimeZoneException 
+	 * Test case to get the timezones if provided in reverse order
 	 * 
 	 */
-	public void testGetTimeZonesInBetweenInReverse() throws IllegalTimeZoneException {
-		String startTimeZone ="EST";
+	@Test
+	public void getTimeZonesInBetweenInReverse()
+			throws IllegalTimeZoneEntryException {
+		logger.info("TimeZoneTrackingTest::getTimeZonesInBetweenInReverse()::Start");
+		String startTimeZone = "EST";
 		String endTimeZone = "PST";
-		assertNotNull(timeZoneTracking);
-		Set<String> inBetweenTimeZones = timeZoneTracking.getTimeZonesInBetween(startTimeZone, endTimeZone);
-		Assert.assertEquals(2, inBetweenTimeZones.size());
+		Assert.assertNotNull(timeZoneTracking);
+		LinkedHashMap<String, ArrayList<TimeZone>> inBetweenTimeZones = timeZoneTracking
+				.getTimeZonesInBetween(startTimeZone, endTimeZone);
+		int count = inBetweenTimeZones.size();
+		Assert.assertEquals(2, count);
+		logger.info("Total TimeZones Between " + startTimeZone + " and "
+				+ endTimeZone + ": " + count);
 		timeZoneTracking.displayTimeZones(inBetweenTimeZones);
+		logger.info("TimeZoneTrackingTest::getTimeZonesInBetweenInReverse()::End");
+
 	}
+
 	/**
-	 * @throws IllegalTimeZoneException 
+	 * Test case to check the Exception
 	 * 
 	 */
-	public void testGetTimeZonesIncorrectData() throws IllegalTimeZoneException {
-        /*try {
-        	timeZoneTracking.getTimeZonesInBetween(startTimeZone, endTimeZone);            fail("Should throw an exception if one or more of given numbers are negative");
-        } catch (Exception e) {
-            Assert.assertTrue(e)
-                    .isInstanceOf(IllegalTimeZoneException.class)
-                    .hasMessage("negatives not allowed: [-1, -2]");
-        }
-*/
-		String startTimeZone ="123";
-		String endTimeZone = "test";
-		assertNotNull(timeZoneTracking);
-		Set<String> inBetweenTimeZones = timeZoneTracking.getTimeZonesInBetween(startTimeZone, endTimeZone);
-		Assert.assertEquals(0, inBetweenTimeZones.size());
+	@Test(expected = IllegalTimeZoneEntryException.class)
+	public void getTimeZonesIncorrectData()
+			throws IllegalTimeZoneEntryException {
+		logger.info("TimeZoneTrackingTest::getTimeZonesIncorrectData()::Start");
+		String startTimeZone = "IST1";
+		String endTimeZone = "PST2";
+		Assert.assertNotNull(timeZoneTracking);
+		LinkedHashMap<String, ArrayList<TimeZone>> inBetweenTimeZones = timeZoneTracking
+				.getTimeZonesInBetween(startTimeZone, endTimeZone);
+		int count = inBetweenTimeZones.size();
+		Assert.assertEquals(0, count);
+		logger.info("Total TimeZones Between " + startTimeZone + " and "
+				+ endTimeZone + ": " + count);
 		timeZoneTracking.displayTimeZones(inBetweenTimeZones);
+		logger.info("TimeZoneTrackingTest::getTimeZonesIncorrectData()::End");
 	}
-	
+
 }
